@@ -8,6 +8,7 @@
 | --- | --- | --- | --- |
 | [ai-delivery-loop](skills/ai-delivery-loop/) | 把一个需求从澄清、方案设计、实现、验收带到评审闭环 | 需求还不清晰，且希望由同一套流程完成完整交付 | 调研说明、设计文档、测试、实现、验收映射和评审结论 |
 | [detailed-design-writing](skills/detailed-design-writing/) | 编写或改进可通过实现就绪门禁的详细设计 | 设计必须在编码前闭合需求、契约、数据、异常、安全、验证与交付证据 | 版本化详细设计、追踪矩阵、跨层契约、失败恢复、测试与 Review Handoff |
+| [reverse-engineer-feature-design](skills/reverse-engineer-feature-design/) | 从固定版本的热门项目源码还原一个功能的 AS-IS 详细设计 | 希望阅读、学习或借鉴某个功能的完整实现，而不是只看目录、API 摘要或 AI 生成 Wiki | 可复现基线、功能切片、证据账本、实现流程、追踪矩阵、未知项，以及证据复核或 TO-BE 写作交接 |
 | [review-detailed-design](skills/review-detailed-design/) | 用硬门禁、证据评分和缺陷分级审核详细设计是否可以进入实现 | 每一份详细设计完成后、编码开始前，以及关键设计变更后 | PASS / CONDITIONAL PASS / FAIL、实现授权、缺陷与复审清单 |
 | [learn-feature](skills/learn-feature/) | 帮助学习者真正掌握一个新特性的需求、架构、规则和边界 | 需要学习 PRD、设计、代码或测试，而不只是阅读摘要 | 一页心智模型、掌握度诊断、主动回忆卡和复习计划 |
 
@@ -54,6 +55,29 @@
 - 明确标记 `Ready for independent review` 或 `DRAFT — NOT READY FOR FORMAL REVIEW` 的 Review Handoff。
 
 Writing Skill 不授予实现权限。文档仍需由 `review-detailed-design` 独立评审，只有取得 `PASS` 后才能进入开发。
+
+## reverse-engineer-feature-design
+
+### 有什么作用
+
+让 Codex、Claude Code 等 Agent 在隔离目录下载并固定某个开源项目的精确提交，围绕一个可观察功能追踪入口、调用、事件、配置、数据、状态、异常、并发、测试和历史，把真实实现重建成带证据的 AS-IS 详细设计。源码、测试和可复现实验是事实依据；代码地图、调用图和 AI 总结只负责导航与综合。
+
+### 什么时候使用
+
+- 想研究热门开源项目里某个功能究竟是如何完整实现的。
+- 需要把跨 UI/API/领域/存储/异步任务的功能代码整理成可学习的设计。
+- 希望比较多个项目的实现取舍，或在自己的设计中借鉴已验证的模式。
+- 需要区分当前实现、历史设计意图、合理推断、未知项和改进建议。
+
+### 使用后会得到什么
+
+- 固定仓库 URL、完整 commit、许可证、构建变体和安全姿态的复现基线。
+- 按功能行为组织的入口、控制流、数据流、状态机、错误、并发和恢复设计。
+- 每个关键结论对应源码、配置、测试、运行或 Git 历史的 Evidence ID。
+- `AS-IS / INFERRED / UNKNOWN`、冲突账本、负证据搜索范围和实现闭包结论。
+- 仅学习时使用的证据闭包复核材料；准备落地时，先作为 baseline 输入 `detailed-design-writing` 形成目标项目 TO-BE 设计，再交给 `review-detailed-design` 做实现授权评审。
+
+该 Skill 默认只做静态分析，不自动执行第三方项目代码。无法关闭关键证据边界时，必须输出 `PARTIAL RECONSTRUCTION — NOT COMPLETE`，不得补写不存在的事实。AS-IS 学习文档本身不能获得实现授权；只有独立编写并通过评审的目标项目 TO-BE 设计才能进入开发。
 
 ## review-detailed-design
 
@@ -111,6 +135,7 @@ Writing Skill 不授予实现权限。文档仍需由 `review-detailed-design` �
 skills/
 ├── ai-delivery-loop/
 ├── detailed-design-writing/
+├── reverse-engineer-feature-design/
 ├── review-detailed-design/
 └── learn-feature/
 ```
