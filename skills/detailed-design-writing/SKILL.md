@@ -36,7 +36,7 @@ Use REQ/AC/FLOW plus F-### for user-observable features. Use D-F###-* for diagra
 
 Inventory requirements, current code/config/schema/contracts/tests/deployment/runbooks and label claims CONFIRMED, INFERRED, PROPOSED, or OPEN.
 
-Define current state, target, gap, owners, constraints, dependencies, non-goals, and CORE/UI/API/EVENT/DATA/SECURITY/OPS applicability. Critical OPEN items mean Not Ready.
+Define current state, target, gap, owners, constraints, dependencies, non-goals, and CORE/UI/API/EVENT/DATA/SECURITY/OPS applicability. Critical OPEN items mean Not Ready. A subsystem may be out of scope internally, but its exact boundary contract remains in scope whenever the designed feature depends on its payload, state, counter, persistence, security, completion, failure, or recovery behavior.
 
 ### 2. Freeze information architecture before parallel work
 

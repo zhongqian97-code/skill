@@ -61,7 +61,7 @@ A method, class, table, or heading is not automatically a feature.
 
 ### 1. Pin, fingerprint, and define the boundary
 
-Record repository, commit, variants, dependencies, schema head, execution status, and source precedence. Define included/excluded behavior and conservative adjacent boundaries.
+Record repository, commit, variants, dependencies, schema head, execution status, and source precedence. Define included/excluded behavior and conservative adjacent boundaries. Excluding a subsystem's internal algorithm never excludes its boundary contract when the current feature depends on its state, counter, payload, persistence, security, completion, failure, or recovery semantics; reconstruct that boundary completely and exclude only the internals beyond it.
 
 ### 2. Freeze the document model before parallel work
 

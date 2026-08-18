@@ -36,7 +36,7 @@ Readiness must not hide visible severe findings.
 
 ## 2. Determine applicability
 
-Mark frontend, sync, async, backend, persistence, dependencies, build/config/deploy, security/ops, migration/recovery, and visual views applicable/N/A-with-evidence/unknown.
+Mark frontend, sync, async, backend, persistence, dependencies, build/config/deploy, security/ops, migration/recovery, and visual views applicable/N/A-with-evidence/unknown. N/A is invalid when an excluded subsystem still changes the reviewed feature's payload, state, counter, persistence, security, completion, failure, or recovery; require its complete boundary contract while allowing its internal algorithm to remain excluded.
 
 ## 3. Run implementation-completeness gates
 
