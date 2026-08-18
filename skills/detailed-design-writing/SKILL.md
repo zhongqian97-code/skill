@@ -1,122 +1,133 @@
 ---
-name: detailed-design-writing
-description: Write, extend, review, or restructure detailed design documents. Use when the user wants help describing current capability boundaries, target capability, gap analysis, implementation mapping, risks, or approval items in a detailed design.
+name: "detailed-design-writing"
+description: "Implementation-ready detailed design authoring with traceable requirements, executable contracts, failure behavior, verification, and review handoff."
 ---
 
-Use this skill when the user needs help writing or refining a detailed design document.
+# Write implementation-ready detailed designs
 
-The goal is not to make the document longer. The goal is to make scope, boundaries, gaps, implementation mapping, and confirmation items explicit so the design can actually guide delivery and avoid rework.
+Produce a detailed design that another qualified engineer can code, integrate, test, operate, and recover without inventing critical behavior.
 
-## When to use
+Read [references/methodology.md](references/methodology.md) completely before writing a full design. Read [references/evidence-catalog.md](references/evidence-catalog.md) to select risk-triggered evidence. Use [templates/detailed-design-template.md](templates/detailed-design-template.md) for a new document and [templates/traceability-matrix.md](templates/traceability-matrix.md) for coverage.
 
-Use this skill when the user asks for things like:
+Match the user's language. Preserve identifiers, code, paths, schemas, and quoted evidence.
 
-- write a detailed design document
-- improve a detailed design
-- how to structure a detailed design
-- what the current system already supports
-- what the target still lacks
-- how to map design gaps into code changes
-- how to list risks or approval items
+## Relationship to formal review
 
-## Core principles
+This skill authors and improves designs. It never grants implementation authorization.
 
-### 1. Write current state and boundaries before the solution
+After writing:
 
-Do not jump straight to "what we will do."
+1. hand the versioned artifact to an independent `review-detailed-design` pass;
+2. implement only after that review returns `PASS`;
+3. treat `CONDITIONAL PASS` as not authorized until every condition is closed and rechecked;
+4. revise and re-review after changes to scope, contracts, data, state, security, quality targets, migration, rollout, rollback, or recovery.
 
-First make these things explicit:
+Do not silently weaken content to make review easier.
 
-- what the system already supports
-- what it does not support
-- where the current capability boundary is
-- what the current constraints are
+## Workflow
 
-### 2. Define the target capability clearly
+### 1. Establish the evidence baseline
 
-State what this change is supposed to achieve. Avoid vague goals that hide scope questions.
+Inspect the available requirements, current code and configuration, schemas, APIs, tests, deployment files, runbooks, prior decisions, and production evidence.
 
-### 3. Keep gap analysis as a separate section
+Record each material statement as:
 
-Do not skip directly from current state to implementation.
+- `CONFIRMED`: supported by a versioned source;
+- `INFERRED`: derived from evidence and explicitly labeled;
+- `PROPOSED`: a new design decision;
+- `OPEN`: unresolved, with owner, due date, impact, and blocking status.
 
-The design should explicitly say:
+Never convert missing facts into confident prose. Critical OPEN items mean the document is not review-ready.
 
-- what capabilities are still missing
-- what modules or flows do not cover the target
-- what would go wrong if those gaps are not addressed
+### 2. Declare scope and applicability
 
-### 4. Map every important gap to implementation
+Define goals, non-goals, current baseline, target capability, boundaries, assumptions, constraints, dependencies, owners, version, and approval authority.
 
-Do not stop at "what is missing." Also say "how it will be closed."
+Classify `CORE` plus applicable `UI`, `API`, `EVENT`, `DATA`, `SECURITY`, and `OPS`. Every N/A requires a reason and evidence.
 
-Try to map each important gap to:
+### 3. Create stable IDs and evidence maps
 
-- module changes
-- interface changes
-- data or configuration changes
-- deployment or process changes
-- code-level landing points
+Assign stable IDs to requirements, acceptance criteria, flows, contracts, decisions, risks, quality scenarios, tests, and operational checks.
 
-### 5. Keep confirmation items visible
+Maintain:
 
-Known changes should not be assumed to be approved just because they were mentioned somewhere.
+```text
+requirement / acceptance criterion
+→ design element
+→ UI / API / event / data / state
+→ risk and quality scenario
+→ test
+→ runtime evidence
+```
 
-If a scope decision, boundary, or impact still needs confirmation, list it clearly under pending confirmation items.
+Also map stakeholder/concern → view and decision → alternatives/rationale/tradeoff.
 
-## Recommended structure
+### 4. Write current state, target, and gaps
 
-Unless the user already has a template to follow, organize the design like this:
+Describe what exists, what does not, and where the present capability boundary lies. Define the target behavior. List each gap and consequence, then map it to concrete modules, contracts, data/configuration, migration, tests, rollout, and code landing points.
 
-1. Background and goals
-2. Current state and capability boundaries
-3. Target capability
-4. Gap analysis
-5. Implementation design for each gap
-6. Impact analysis
-7. Risks and pending confirmation items
-8. Delivery plan
+Do not stop at a feature list or file list.
 
-## Working flow
+### 5. Close cross-layer semantics
 
-1. Extract the user's actual goal.
-2. Describe what the current system already supports and does not support.
-3. Make the boundary explicit, especially where scope is easy to misunderstand.
-4. Split out the gap between current and target.
-5. Map the important gaps into implementation.
-6. List risks and pending confirmation items separately.
-7. If needed, add a management-facing summary for reporting.
+For every critical journey, specify UI/state → API/event → domain action → data/message → runtime signal.
 
-## Output rules
+Define applicable schemas, errors, authorization, idempotency, ordering, timeouts, retries, cancellation, concurrency, transactions, state transitions, invariants, partial failure, compensation, recovery, and operator action.
 
-When producing a detailed design or outline, optimize for:
+Use OpenAPI, AsyncAPI, protobuf, JSON Schema, DDL, state machines, sequence diagrams, decision tables, or pseudocode when they express the contract more precisely than prose.
 
-- clear scope
-- clear boundaries
-- clear gaps
-- clear implementation mapping
-- clear approval items
+### 6. Quantify quality and verification
 
-Do not return a generic empty template if the user has already given enough project context to fill sections concretely.
+Turn “fast,” “available,” “secure,” “scalable,” and similar claims into scenarios with source, stimulus, artifact, environment, response, measure, and verification.
 
-## Strong reminders
+Map every requirement, invariant, failure mode, authorization rule, migration, and quality target to deterministic tests or runtime checks with inputs, environment, expected result, threshold, and owner.
 
-### Do not blur deployment scope
+### 7. Design delivery and recovery
 
-For example, do not write only "support Docker deployment." Be explicit about whether the scope is:
+Specify version compatibility, migration/backfill, rollout, health gates, stop conditions, observability, alerting, runbook, rollback, backup/restore, RTO/RPO, reconciliation, and support ownership as applicable.
 
-- database only
-- frontend, backend, and database together
+A deployment sequence without a failure and recovery sequence is incomplete.
 
-### Do not bury pending decisions in body text
+### 8. Run the author readiness check
 
-Anything that needs a decision from leadership, product, test, or ops should be listed explicitly.
+Before handoff, confirm:
 
-### Do not confuse mention with confirmation
+- the artifact and evidence are versioned and reproducible;
+- all applicable template sections contain resolved decisions or justified N/A;
+- no critical `TODO/TBD/TBC/OPEN` remains;
+- cross-view names, boundaries, ownership, schemas, and directions agree;
+- every critical requirement has design and verification targets;
+- failure, concurrency, security, migration, rollout, and recovery semantics are explicit;
+- two qualified engineers would not make different critical choices.
 
-Mentioned in a chat, said in a meeting, or understood by the team does not automatically mean formally confirmed.
+If the check fails, label the output `DRAFT — NOT READY FOR FORMAL REVIEW` and give the shortest completion list. Do not self-score or declare PASS.
 
-## References
+### 9. Prepare review handoff
 
-Read `references/methodology.md` for the longer methodology.
-Read `templates/detailed-design-template.md` for a reusable structure.
+Freeze a document version and provide:
+
+- applicability and tailoring table;
+- evidence/source index;
+- traceability matrix;
+- open-decision and accepted-risk register;
+- changed sections since the previous review;
+- requested reviewers by domain;
+- explicit statement: `Ready for independent review` or `Not ready`.
+
+## Precision rules
+
+- Prefer exact schemas, state tables, sequences, invariants, thresholds, and examples over adjectives.
+- Describe normal, boundary, rejected, timeout, retry, duplicate, concurrent, partial-success, restart, and recovery behavior when applicable.
+- Allow local code organization to remain an implementation choice; close all cross-module and risk-bearing semantics.
+- Use diagrams only when they resolve a concern. A diagram count is never a quality metric.
+- Do not duplicate production code into the design. Specify behavior, contracts, invariants, and landing points.
+- Do not cite “framework defaults,” “industry standard,” or undocumented team knowledge as design evidence.
+- Do not return an empty generic template when project evidence is available; fill confirmed sections and expose missing evidence precisely.
+
+## Completion test
+
+Ask:
+
+> If two qualified engineers independently implement this document, could they choose different critical interfaces, data rules, states, errors, concurrency behavior, security controls, quality thresholds, migration, rollback, or acceptance criteria?
+
+If yes, continue designing. The document is not ready for formal review.
