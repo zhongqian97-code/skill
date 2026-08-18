@@ -55,7 +55,7 @@ Immediate failure when applicable exact fields, schemas, states, failures, migra
 Precision extensions:
 
 - every sensitive field must trace request → DTO/domain → serialization → persistence/config → logs and list/detail/export responses; record actual encryption, masking, omission, or raw exposure;
-- every async contract must enumerate all JSON keys/types/required-or-omitempty/zero-value compatibility, producer, consumer, queue, timeout, retry, and counter semantics;
+- every async contract must enumerate all JSON keys/types/required-or-omitempty/zero-value compatibility, producer, consumer, queue, timeout, retry, and counter semantics, including the exact terminal order and failure handling for row retention/release, parent-counter consumption, DLQ insertion, pending-row deletion, and aggregated settlement errors;
 - database review distinguishes physical DEFAULT from migration backfill and application defaults;
 - cross-store cleanup/reparse review preserves side-effect order and checks error aggregation, partial commit, retry/double-apply, accounting drift, reconciliation, and repair.
 

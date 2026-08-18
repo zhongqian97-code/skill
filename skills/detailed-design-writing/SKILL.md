@@ -69,7 +69,7 @@ Each F-ID contains:
 2. at least one primary Mermaid diagram from trigger to result;
 3. guided diagram reading and text alternative;
 4. frontend controls, validation, and all client states;
-5. exact sync/async contracts and field mappings; async schemas enumerate every wire key/type/required-or-omitempty/zero-value rule plus producer, consumer, queue, retry and timeout;
+5. exact sync/async contracts and field mappings; async schemas enumerate every wire key/type/required-or-omitempty/zero-value rule plus producer, consumer, queue, retry and timeout, and preserve terminal settlement order for row retention/release, parent-counter consumption, DLQ insertion failure, pending-row deletion, and error aggregation;
 6. backend orchestration, modules, transactions, and side effects;
 7. physical data reads/writes, fields, indexes, invariants, and migrations; distinguish physical DEFAULT, migration backfill, and application default;
 8. state, concurrency, idempotency, timeout, retry, cancellation, failure, compensation, restart, and recovery, including cross-store partial commits, repeated cleanup/double-apply, quota/accounting drift, reconciliation, and exact side-effect order;

@@ -120,7 +120,7 @@ Close:
 
 - routes, component ownership, controls/defaults/validation and all client states;
 - sync request/response/error/idempotency/timeout/version contracts;
-- async producer/consumer contracts with every JSON key, exact type, required/omitempty/zero-value compatibility, queue, retry, timeout, order, dedup, DLQ, replay, and counter-consumption semantics; a “core fields” summary is not closure;
+- async producer/consumer contracts with every JSON key, exact type, required/omitempty/zero-value compatibility, queue, retry, timeout, order, dedup, DLQ, replay, and counter-consumption semantics; terminal settlement must preserve the exact order and failure behavior of row retention/release, parent-counter consumption, DLQ insertion, pending-row deletion, and error aggregation; a “core fields” summary is not closure;
 - handler/service/repository responsibilities and transaction/concurrency behavior;
 - every physical table/object, column/type/null/default, PK/FK actions, unique/check/index, migration, empty-DB order, backfill, rollback/restore, and query/DTO lineage; distinguish physical database DEFAULT, migration backfill, and application-assigned defaults;
 - every cross-store create/update/cleanup sequence, including exact side-effect order, error aggregation, partial commits, retry/re-entry behavior, double-apply risk, reconciliation, and accounting/quota drift;
