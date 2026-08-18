@@ -1,220 +1,175 @@
 ---
 name: "review-detailed-design"
-description: "Audit AS-IS reconstruction or authorize TO-BE implementation with hard full-stack and database gates."
+description: "以全栈、数据库、图文可用性和单文档合稿硬门禁审查 AS-IS/TO-BE 设计。"
 ---
 
 # Review Detailed Design
 
-Review a detailed design using one of two explicit modes:
+Review in one explicit mode:
 
-1. **AS-IS RECONSTRUCTION AUDIT** — determine whether a source-derived design faithfully and completely reconstructs the pinned implementation for equivalent reproduction.
-2. **TO-BE IMPLEMENTATION AUTHORIZATION** — determine whether a proposed design is ready to authorize implementation.
+1. AS-IS RECONSTRUCTION AUDIT: fidelity and equivalent reproduction.
+2. TO-BE IMPLEMENTATION AUTHORIZATION: readiness to implement.
 
-Never mix their inputs, verdicts, or authority.
+Never mix their inputs, verdicts, or authority. Read references/review-standard.md and references/usability-and-synthesis-gates.md completely. Use templates/review-report.md.
 
 ## Core principles
 
-- Review contracts and evidence, not page count or polish.
-- Select the mode before the readiness gate.
-- Frontend, backend, interaction contracts, and persistence are first-class implementation surfaces.
-- If persistent state is applicable, names or an ER diagram are not a database design.
-- If a UI and backend are applicable, component and endpoint lists are not an interaction design; require field-level round trips and state transitions.
-- A defect in the source implementation belongs in an AS-IS appendix/conflict ledger. An implementation detail present in source but missing from the document is a reconstruction defect.
-- Do not lower the standard because a document calls itself a draft.
-- Never authorize implementation from an AS-IS document.
+- Review content, findability, diagrams, cross-view consistency, and evidence.
+- A design is not usable because every fact exists somewhere.
+- Exact tables and contracts are mandatory; diagrams supplement them.
+- A full-stack feature needs an early system summary and visual coverage for every F-ID.
+- Multiple-agent work must be semantically integrated by one editor, not concatenated.
+- A source defect belongs in the AS-IS defect register; a source detail missing from the design is a reconstruction omission.
+- AS-IS never grants implementation authorization; only TO-BE PASS does.
 
-Read `references/review-standard.md` completely before reviewing.
+## 1. Select mode and run readiness
 
-## 1. Select review mode
+AS-IS inputs: pinned source, feature boundary, F/BEH catalog, implementation census, evidence/conflict/unknown ledgers, claimed status.
 
-### AS-IS RECONSTRUCTION AUDIT
+Verdicts: COMPLETE, PARTIAL, BLOCKED. Authorization: NOT APPLICABLE.
 
-Use when the document was derived from an existing codebase and is intended for learning, comparison, or reuse baseline.
+TO-BE inputs: frozen scope/REQ/AC, owners/approvers, target design, traceability, verification, migration/release/rollback.
 
-Required inputs:
+Verdicts: PASS, CONDITIONAL PASS, FAIL/FAIL not ready. Only PASS authorizes implementation.
 
-- repository and full pinned commit;
-- feature boundary and behavior IDs;
-- implementation-surface census;
-- AS-IS design;
-- evidence, coverage, conflict, and unknown ledgers;
-- access to the pinned source or sufficient immutable evidence.
+Readiness must not hide visible severe findings.
 
-Verdicts:
+## 2. Determine applicability
 
-- `COMPLETE RECONSTRUCTION`;
-- `PARTIAL RECONSTRUCTION`;
-- `BLOCKED RECONSTRUCTION`.
+Mark frontend, sync, async, backend, persistence, dependencies, build/config/deploy, security/ops, migration/recovery, and visual views applicable/N/A-with-evidence/unknown.
 
-These verdicts describe reconstruction quality only and never authorize implementation.
+## 3. Run implementation-completeness gates
 
-### TO-BE IMPLEMENTATION AUTHORIZATION
+S1 Scope/behaviors/census
+S2 Frontend controls and all client states
+S3 Sync/async contracts and field lineage
+S4 Backend ownership and executable flows
+S5 Physical schema and empty-database reconstruction
+S6 State/transactions/concurrency/failure/recovery
+S7 Security/tenancy/privacy/external boundaries
+S8 Build/config/deploy/observability/rollback/restore
+S9 Verification/traceability/evidence/closure
 
-Use when the document proposes a target implementation.
+Immediate failure when applicable exact fields, schemas, states, failures, migration/build steps, or evidence are absent. ER diagrams and sequence diagrams do not replace normative contracts.
 
-Required inputs:
+## 4. Run document-usability and visual gates
 
-- frozen scope and stable requirement/acceptance IDs;
-- implementation-ready design;
-- traceability matrix;
-- test/verification and release/rollback plans;
-- owners and approvers;
-- baseline/version/change history.
+### U1 Single-document integrity
 
-Verdicts:
+Require exactly one formal Markdown deliverable, one H1, one status/source block, one table of contents, one continuous hierarchy, and one canonical glossary.
 
-- `PASS`;
-- `CONDITIONAL PASS`;
-- `FAIL`;
-- readiness failure is reported as `FAIL (not ready)`.
+Fail for appended standalone reports, repeated H1/introduction/conclusion, numbering restarts, duplicated normative API/table/state definitions, abrupt terminology/voice changes, or dependencies on companion files.
 
-Only unconditional `PASS` authorizes implementation.
+### U2 Dual-reader information architecture
 
-If mode is ambiguous, stop with `FAIL (not ready — review mode and artifact intent are ambiguous)`.
+Require explicit learner, implementer, and reviewer paths. The first 15–20% establishes scope, vocabulary, system shape, lifecycle, and feature map.
 
-## 2. Run the mode-specific readiness gate
+From any F-ID, API/event, backend, DB, failure, test, and evidence must be reachable within two navigational jumps.
 
-### AS-IS readiness
+### V1 System visual model
 
-Do not score until all exist:
+Require an early Mermaid system summary covering applicable actors, frontend, API, domain/backend, async, persistence/storage, external dependencies, and trust/runtime boundaries.
 
-- pinned source identity;
-- explicit feature boundary;
-- behavior catalog;
-- implementation census;
-- evidence coordinates;
-- conflict/unknown ledger;
-- reconstruction status claimed by the author.
+Require triggered component/context, state, physical ER, sequence/flow, and deployment views, or N/A with evidence.
 
-If unavailable, report `BLOCKED RECONSTRUCTION` or `PARTIAL RECONSTRUCTION` depending on whether a meaningful audit is possible. Do not ask for REQ/AC, approvers, rollout, or TO-BE acceptance criteria as AS-IS readiness inputs.
+### V2 Feature visual coverage
 
-### TO-BE readiness
+Every F-ID must map to at least one renderable primary Mermaid behavior diagram from trigger to observable result. Shared diagrams need explicit path coverage.
 
-Do not score until all required TO-BE inputs exist and are internally readable. Missing scope, REQ/AC, baseline, owners/approvers, traceability, or verification/release artifacts yields `FAIL (not ready)`.
+Persistence requires ER; non-trivial lifecycle requires state; cross-boundary/async behavior requires sequence; complex branching requires flow.
 
-Readiness controls whether scoring is meaningful; it must not hide obvious severe findings. Record any immediately visible critical issue even when stopping.
+Any uncovered F-ID is a hard S2 finding.
 
-## 3. Determine applicability
+### V3 Diagram quality and truth
 
-For each surface mark `applicable`, `not applicable with evidence`, or `unknown`:
+Every diagram needs stable D-ID, purpose, text alternative or accTitle/accDescr, guided reading, canonical names, and mappings to F/BEH/API/EVT/DB/TEST/E.
 
-- frontend;
-- synchronous contracts;
-- asynchronous contracts;
-- backend/domain;
-- database/persistence;
-- external dependencies;
-- build/config/deployment;
-- security/operations;
-- migration/rollback/restore.
+Edges must represent evidenced calls/messages/data writes. Sync/async direction, states, and failure branches must agree with exact contracts. Mermaid must render or be explicitly marked rendering-unverified; syntax or semantic contradictions fail.
 
-A bare “N/A” is not evidence. Unknown material applicability fails the relevant gate.
+A diagram that merely decorates prose does not satisfy coverage.
 
-## 4. Run shared implementation-completeness gates
+### P1 Vertical Feature Packet closure
 
-Use the gate definitions in `references/review-standard.md`.
+Every F-ID closes:
 
-- S1 Scope, behavior, and complete implementation census
-- S2 Frontend states and client design
-- S3 Synchronous/asynchronous contracts and field lineage
-- S4 Backend responsibilities and executable flows
-- S5 Database schema and empty-database reconstruction
-- S6 State, transactions, concurrency, failures, and recovery
-- S7 Security, tenancy, privacy, and external boundaries
-- S8 Build, configuration, deployment, observability, rollback, and restore
-- S9 Verification, traceability, evidence, and closure
+```text
+intent/trigger → UI/state → API/event → backend → DB/queue/external
+→ response/result → failure/recovery → security/ops → test/evidence
+```
 
-### Immediate hard failures
+N/A requires evidence.
 
-The relevant gate fails immediately when:
+### M1 Multi-agent editorial synthesis
 
-- persistence is applicable but exact physical objects, columns, keys/constraints/indexes, schema source, or construction/migration order are missing;
-- a database can not be built from empty state using the document and cited artifacts;
-- frontend and backend are applicable but request/response and field-level round trips are missing;
-- UI states or backend failure paths are reduced to a happy path;
-- transaction, concurrency, retry/idempotency, or recovery behavior is material but unspecified;
-- an inventory item, behavior, contract, or database object is material and unexplained;
-- the document relies on inference while claiming an exact contract;
-- build/deploy/migration/rollback steps are necessary but absent.
+When multiple agents contributed, require evidence that:
 
-## 5. Apply mode-specific gates
+- scope, F/BEH IDs, glossary, outline, and evidence/diagram conventions were frozen;
+- agents returned structured packets/domain audits, not independent final chapters;
+- one integrator resolved conflicts and rewrote the document;
+- duplicate facts were replaced by cross-references;
+- terminology, diagram nodes, directions, and IDs were normalized.
 
-### AS-IS fidelity gates
+Hard-splice evidence is a blocking documentation defect even if component facts are individually correct.
 
-- A1 Source pinning and evidence integrity
-- A2 Forward and backward implementation trace
-- A3 Source-of-truth arbitration and conflict handling
-- A4 Source defects separated from document omissions
-- A5 Equivalent-reproduction counterfactual
+### C1 Cross-view consistency
 
-For A5, ask whether a second engineer can reproduce the frontend, backend, interaction contracts, persistent schema, failures, and clean-environment build without reopening the source except to verify cited locations.
+Require bidirectional mapping:
 
-A source defect does not fail reconstruction if the document accurately records the observed defect, its evidence, and effect. It belongs in the appendix. The same behavior or schema existing in source but absent from the document is a reconstruction omission and fails the relevant shared gate.
+```text
+F/BEH ↔ diagram node/edge ↔ UI/API/EVT ↔ backend symbol
+↔ table/column/index ↔ failure/test ↔ evidence
+```
 
-### TO-BE authorization gates
+Orphan diagrams, contracts, data objects, tests, and evidence fail the relevant gate.
 
-- T1 Stable REQ/AC and bidirectional traceability
-- T2 Decision closure and accountable owners
-- T3 Verification-ready acceptance and tests
-- T4 Migration/release/rollback feasibility
-- T5 Independent implementer convergence
+## 5. Run mode-specific gates
 
-Two competent implementers should not have to make materially different decisions about UI, contracts, data schema, state, concurrency, security, migration, recovery, or acceptance.
+AS-IS: A1 pinning/integrity; A2 forward/backward trace; A3 source arbitration; A4 source defect versus document omission; A5 equivalent reproduction; A6 learner and implementer usability.
 
-## 6. Record findings
+TO-BE: T1 REQ/AC traceability; T2 decision closure/owners; T3 deterministic verification; T4 release/migration feasibility; T5 independent implementer convergence; T6 learner and implementer usability.
 
-Each finding includes:
+For AS-IS, a documented source defect does not fail fidelity by itself. Missing source behavior in the document does.
 
-- stable ID;
-- severity;
-- shared/mode-specific gate;
-- exact document location;
-- evidence or missing artifact;
-- why it affects fidelity or implementation;
-- minimal closure action;
-- owner and status when applicable.
+## 6. Perform two blind-read tests
 
-Severity:
+Learner blind read:
 
-- `S0`: catastrophic safety, security, data-loss, or irreversible integrity risk;
-- `S1`: material authorization/fidelity blocker with likely severe production impact;
-- `S2`: hard-gate completeness blocker;
-- `S3`: important improvement that does not independently block;
-- `S4`: editorial or optional improvement.
+- in ten minutes, use only the first understanding layer and one feature section;
+- explain system purpose/boundary and one feature's trigger, processing, persistence, result, and important failure;
+- every unfamiliar canonical term must be findable.
 
-Any S0/S1/S2 means a TO-BE design cannot pass and an AS-IS reconstruction cannot be complete.
+Implementer blind task:
 
-## 7. Produce the verdict
+- select one F-ID without author guidance;
+- locate its diagram, UI, exact contract, backend, DB fields/indexes, async/failure behavior, tests, and evidence in at most two jumps;
+- determine whether a critical design choice remains.
 
-### AS-IS
+Record evidence and failure points; do not merely claim the tests passed.
 
-- `COMPLETE RECONSTRUCTION`: all applicable shared and A gates pass; no S0/S1/S2; no material unknowns.
-- `PARTIAL RECONSTRUCTION`: useful reconstruction exists but any applicable gate remains open.
-- `BLOCKED RECONSTRUCTION`: trustworthy audit cannot proceed because source, scope, generated artifacts, dependencies, or evidence are unavailable.
+## 7. Findings and severity
 
-State clearly: `Implementation authorization: NOT APPLICABLE / NOT GRANTED`.
+Every finding includes ID, severity, gate, location, evidence/missing artifact, impact, minimal closure, and classification.
 
-### TO-BE
+S0 catastrophic; S1 material fidelity/production blocker; S2 hard completeness/usability blocker; S3 important non-blocker; S4 editorial.
 
-- `PASS`: all shared and T gates pass; no S0/S1/S2; independent implementation is authorized.
-- `CONDITIONAL PASS`: only non-implementation-affecting pre-start administrative conditions remain. It does not authorize implementation until conditions close and are re-reviewed.
-- `FAIL`: any hard gate fails or any S0/S1/S2 remains.
+Treat missing summary diagram, uncovered F-ID diagram, missing vertical slice, non-reconstructable DB, hard-spliced document, diagram/contract contradiction, or failed implementer blind task as at least S2. Escalate to S1 where it hides security/data-loss/integrity behavior.
 
-Use `templates/review-report.md`. Do not modify the reviewed document unless the user separately asks for revisions.
+Any S0/S1/S2 blocks COMPLETE and PASS.
 
-## 8. Minimum correction set
+## 8. Verdict
 
-List the shortest concrete changes required to reach the next verdict. Separate:
+AS-IS COMPLETE requires S1–S9, U1–U2, V1–V3, P1, M1 when applicable, C1, A1–A6, no material unknowns, and no S0–S2.
 
-- defects in the reviewed document;
-- defects/inconsistencies in the source implementation;
-- unavailable evidence or external blockers;
+TO-BE PASS requires the same shared/usability gates plus T1–T6 and no S0–S2. CONDITIONAL PASS cannot contain implementation-affecting conditions and does not authorize implementation until re-review.
+
+## 9. Correction set
+
+Separate:
+
+- document/reconstruction omissions;
+- source defects;
+- unavailable external/runtime evidence;
+- visual/editorial/synthesis defects;
 - optional improvements.
 
-This separation is mandatory in AS-IS mode.
-
-## Handoff
-
-For an AS-IS result, hand the completed baseline to `detailed-design-writing` only if the user wants a separate TO-BE design. Then review that TO-BE document in authorization mode.
-
-For a TO-BE result, only unconditional PASS may be used as implementation authorization.
+Do not modify the reviewed document unless separately asked.

@@ -1,192 +1,134 @@
 # <Project> — <Feature> AS-IS Full-Stack Detailed Design
 
 > Reconstruction status: COMPLETE | PARTIAL | BLOCKED
+> Repository / full commit:
 > Purpose: learning / comparison / reuse baseline
-> This AS-IS document describes pinned source behavior. It does not authorize implementation in another product.
+> Readers: learner / equivalent implementer / reviewer
+> AS-IS reconstruction does not authorize implementation in another product.
 
-## 0. Source fingerprint
+## 0. How to read this document
 
-| Item | Value | Evidence |
-|---|---|---|
-| Repository | | |
-| Full commit SHA | | |
-| Dirty/submodule state | | |
-| Package/lock versions | | |
-| Schema/migration head | | |
-| Generated artifacts | | |
-| Execution authorization | | |
+- Five-minute learner path:
+- Implementer path:
+- Reviewer path:
+- Canonical terms and ID legend:
+- Table of contents:
 
-## 1. Scope and observed behaviors
+## 1. Executive summary and feature map
 
-### 1.1 Included / excluded boundary
+### 1.1 Scope, boundary, and source fingerprint
 
-### 1.2 Behavior catalog
+### 1.2 System summary structure
 
-| BEH ID | Trigger/actor | Success result | Validation/failure/concurrency variants | Evidence | Status |
-|---|---|---|---|---|---|
+Purpose and text alternative:
 
-## 2. Implementation-surface census
+```mermaid
+flowchart LR
+  Actor --> UI
+  UI --> API
+  API --> Domain
+  Domain --> DB[(Database)]
+```
 
-| INV ID | Layer | File/object and symbol | Role | Status | Exclusion or evidence |
-|---|---|---|---|---|---|
-| | Frontend | | | included/excluded/generated/third-party/unknown | |
-| | API/contract | | | | |
-| | Backend | | | | |
-| | Persistence/migration | | | | |
-| | Async/job | | | | |
-| | Build/config/deploy | | | | |
-| | Tests | | | | |
+Read 1→N:
+Evidence/ID mapping:
 
-State census totals and all material unknowns.
+### 1.3 Feature-to-diagram map
 
-## 3. System context and runtime topology
-
-Include actors, containers/services, external dependencies, trust boundaries, deployment nodes, startup registration, and feature flags.
-
-## 4. Frontend detailed design
-
-### 4.1 Routes, pages, components
-
-| Route/entry | Page/component | Parent/child ownership | Guard/flag | Evidence |
-|---|---|---|---|---|
-
-### 4.2 Controls and fields
-
-| UI field/control | Type | Default | Validation | Enabled/visible rule | Action | Evidence |
+| F-ID | User goal/result | BEH IDs | Primary D-ID | API/EVT | DB objects | Section |
 |---|---|---|---|---|---|---|
 
-### 4.3 State model
+## 2. Mental model, glossary, and core lifecycle
 
-| State | Entry condition | Visible result | Allowed action | Transition | Failure/recovery | Evidence |
-|---|---|---|---|---|---|---|
+### 2.1 Canonical glossary
 
-Cover loading, empty, partial, stale, error, unauthorized, retry, refresh, navigation, responsive, accessibility, localization, and analytics where applicable.
+### 2.2 Context/components/deployment
 
-### 4.4 Client data and cache
+### 2.3 Core data relationship and lifecycle diagrams
 
-Document stores/hooks/queries, cache keys, invalidation, optimistic updates, refresh/reload behavior, and client tests.
+## 3. Feature implementation packets
 
-## 5. Frontend/backend interaction contracts
+Repeat this complete packet for every F-ID.
 
-### 5.1 Synchronous APIs
+### F-### — <feature>
 
-| Contract ID | Method/path | Auth | Request schema | Success schema | Errors | Idempotency/timeout/version | Evidence |
-|---|---|---|---|---|---|---|---|
+#### 3.x.1 Thirty-second summary
 
-Give field-level request and response tables, including type, nullability, default, validation, encoding, and semantic meaning.
+- Goal/result:
+- Trigger/actor:
+- Preconditions/permission:
+- Applicable variants:
 
-### 5.2 Events, queues, jobs, webhooks
+#### 3.x.2 Primary behavior diagram — D-F###-SEQ-01
 
-| Contract ID | Channel/direction | Producer | Consumer | Payload schema | Ordering/retry/dedupe/DLQ/replay | Evidence |
-|---|---|---|---|---|---|---|
+Purpose and text alternative:
 
-### 5.3 End-to-end field lineage
+```mermaid
+sequenceDiagram
+  actor User
+  participant UI
+  participant API
+  participant Service
+  participant DB
+  User->>UI: Trigger
+  UI->>API: API-###
+  API->>Service: validate and execute
+  Service->>DB: DB-### read/write
+  DB-->>Service: result
+  Service-->>API: domain result
+  API-->>UI: response
+  UI-->>User: observable result
+```
 
-| Field ID | UI/client field | Request/event field | Domain/service field | Repository parameter | DB column/external field | Response/client/display | Evidence |
-|---|---|---|---|---|---|---|---|
+Read 1→N:
+Diagram ↔ F/BEH/API/EVT/DB/E mapping:
 
-## 6. Backend detailed design
+#### 3.x.3 Frontend and client states
 
-### 6.1 Modules and responsibilities
+#### 3.x.4 Exact API/event contracts
 
-| Module/class/function | Inputs/outputs | Responsibility | Dependencies | Transaction/error behavior | Evidence |
-|---|---|---|---|---|---|
+#### 3.x.5 Backend execution steps and ownership
 
-### 6.2 Main flows
+#### 3.x.6 Data effects, field lineage, transactions, and indexes
 
-For each BEH provide numbered success and failure steps from entry through persistence/side effects and back to the rendered/output result.
+#### 3.x.7 State, async, failure, concurrency, retry, cancellation, and recovery
 
-### 6.3 Transactions, concurrency, idempotency
+#### 3.x.8 Security, observability, tests, and evidence
 
-Specify transaction boundaries, isolation/locks, optimistic versions, uniqueness races, duplicate handling, timeout/retry/cancellation, compensation, and crash recovery.
+#### 3.x.9 Conflicts and unknowns
 
-## 7. Database and persistence reconstruction
+## 4. Shared API and event reference
 
-If persistence is not applicable, prove that conclusion with source-search evidence. Otherwise complete every subsection.
+Define each schema once; feature packets cross-reference IDs.
 
-### 7.1 Database topology and source of truth
+## 5. Backend and runtime cross-cutting design
 
-State database engine/version, schemas, extensions, migration framework, ORM/codegen, schema head, and precedence when representations conflict.
+## 6. Complete physical database design
 
-### 7.2 Table/object catalog
+### 6.1 Database topology and source of truth
 
-| Object | Kind | Purpose/owner | Read/write paths | Source migration/schema | Evidence |
-|---|---|---|---|---|---|
+### 6.2 Physical ER diagram
 
-### 7.3 Complete schema per object
+### 6.3 Complete schema per object
 
-Repeat for every table/collection/view:
+For every object list every column/type/null/default, PK generation, FK targets/actions/deferrability, unique/check/exclusion constraints, indexes/predicates/includes, sequences/enums/triggers/views, tenant/partition/retention, migration source, query/DTO lineage.
 
-#### <schema.object>
+### 6.4 Empty-database construction, evolution, rollback, and restore
 
-| Column/field | Exact type | Null | Default/generated | Meaning/sensitivity | Writer/readers | Evidence |
-|---|---|---|---|---|---|---|
+## 7. Security, build, deployment, operations, and recovery
 
-| Constraint/index | Exact definition | Columns/order/ref | Update/delete/deferrable or predicate/include | Rationale/invariant | Evidence |
-|---|---|---|---|---|---|
+## 8. Verification and equivalent-reproduction audit
 
-Record PK generation, FK actions, unique/check/exclusion constraints, sequences, enums/domains, triggers, views, tenant/partition/shard keys, retention, and encryption/audit behavior.
+### 8.1 F-ID/BEH/diagram/contract/data/test/evidence coverage
 
-### 7.4 Relationship diagram
+### 8.2 Mermaid rendering and cross-view consistency
 
-The diagram supplements, but does not replace, exact table definitions.
+### 8.3 Learner blind-read result
 
-### 7.5 Empty-database construction
+### 8.4 Implementer blind-task result
 
-| Order | Prerequisite/migration/DDL | Objects created or changed | Transaction/lock | Failure/retry | Evidence |
-|---|---|---|---|---|---|
+### 8.5 Final reconstruction status
 
-Include extensions, seeds/reference data, application startup assumptions, schema-version detection, and verification commands.
+## 9. Source defects, conflicts, unknowns, and evidence index
 
-### 7.6 Evolution, backfill, rollback, restore
-
-Document compatibility windows, online/offline migration behavior, backfills, irreversible steps, rollback, backup/restore, and schema drift checks.
-
-### 7.7 Query and access-path mapping
-
-| Repository/query | SQL/ORM behavior | Tables/columns | Expected index | Lock/consistency | Evidence |
-|---|---|---|---|---|---|
-
-## 8. Failure, security, and operations
-
-| Scenario | Detection | Observed behavior | State/data outcome | Recovery/compensation | Telemetry | Evidence |
-|---|---|---|---|---|---|---|
-
-Cover authn/authz, tenant isolation, injection/content validation, secrets/logging, capacity/latency, metrics/logs/traces/audit/alerts, deployment, feature flags, rollback, backup/restore.
-
-## 9. Build, configuration, and deployment
-
-Provide exact build/codegen/migration/start commands only when evidenced, configuration/default precedence, dependency services, deployment order, health checks, and rollback.
-
-## 10. Verification and tests
-
-| BEH/contract/object | Test or runtime evidence | Branches covered | Missing branch/negative evidence | Result |
-|---|---|---|---|---|
-
-## 11. Conflicts, unknowns, and source defects
-
-| ID | Type | Conflicting/absent artifacts | Runtime winner or unknown | Impact on reproduction | Disposition |
-|---|---|---|---|---|---|
-
-Source defects belong here and do not become documentation omissions, provided the observed behavior and impact are documented.
-
-## 12. Coverage and equivalent-reproduction audit
-
-| Unit | Applicable | Inventory total | Closed | Unknown | Evidence gaps | Verdict |
-|---|---:|---:|---:|---:|---|---|
-| Behaviors | | | | | | |
-| Frontend | | | | | | |
-| API/async contracts | | | | | | |
-| Backend | | | | | | |
-| Database/persistence | | | | | | |
-| Failure/security/ops | | | | | | |
-| Build/deploy/tests | | | | | | |
-
-Answer explicitly whether a second engineer can construct an empty database and reproduce the full feature without reopening the source.
-
-## 13. Final status
-
-- Status: COMPLETE RECONSTRUCTION | PARTIAL RECONSTRUCTION | BLOCKED RECONSTRUCTION
-- Material open items:
-- Recommended next evidence:
-- AS-IS baseline suitability for a separate TO-BE design:
+Embed ledgers here; do not append independent documents with their own H1 or numbering.

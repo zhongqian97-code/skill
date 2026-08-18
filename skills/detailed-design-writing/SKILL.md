@@ -1,133 +1,152 @@
 ---
 name: "detailed-design-writing"
-description: "Implementation-ready detailed design authoring with traceable requirements, executable contracts, failure behavior, verification, and review handoff."
+description: "编写一份图文统一、双读者可用且可直接实施的全栈详细设计。"
 ---
 
-# Write implementation-ready detailed designs
+# Write Implementation-Ready Detailed Designs
 
-Produce a detailed design that another qualified engineer can code, integrate, test, operate, and recover without inventing critical behavior.
+Produce one coherent detailed design that a learner can understand and a qualified engineer can implement, integrate, test, operate, and recover without inventing critical behavior.
 
-Read [references/methodology.md](references/methodology.md) completely before writing a full design. Read [references/evidence-catalog.md](references/evidence-catalog.md) to select risk-triggered evidence. Use [templates/detailed-design-template.md](templates/detailed-design-template.md) for a new document and [templates/traceability-matrix.md](templates/traceability-matrix.md) for coverage.
+Read references/methodology.md, references/evidence-catalog.md, and references/visual-and-editorial-standard.md before a full design. Use templates/detailed-design-template.md.
 
-Match the user's language. Preserve identifiers, code, paths, schemas, and quoted evidence.
+This skill authors designs but never grants implementation authorization. Independent review-detailed-design must return PASS before TO-BE implementation.
 
-## Relationship to formal review
+## Output and reader contract
 
-This skill authors and improves designs. It never grants implementation authorization.
+The formal deliverable is exactly one Markdown document unless the user explicitly requests another packaging format.
 
-After writing:
+Require:
 
-1. hand the versioned artifact to an independent `review-detailed-design` pass;
-2. implement only after that review returns `PASS`;
-3. treat `CONDITIONAL PASS` as not authorized until every condition is closed and rechecked;
-4. revise and re-review after changes to scope, contracts, data, state, security, quality targets, migration, rollout, rollback, or recovery.
+- one H1, one status/version block, one table of contents, one continuous hierarchy;
+- a five-minute understanding layer, feature implementation packets, and a normative reference layer;
+- learner, implementer, and reviewer reading paths;
+- one canonical glossary and identifier system;
+- one fact in one canonical home, with cross-references elsewhere;
+- no concatenated subdocuments, duplicate introductions/conclusions, restarted numbering, or companion-file dependencies.
 
-Do not silently weaken content to make review easier.
+A long document is not complete merely because facts exist somewhere. Important information must be findable and related.
+
+## Stable identifiers
+
+Use REQ/AC/FLOW plus F-### for user-observable features. Use D-F###-* for diagrams and UI/API/EVT/DATA/INV/QA/DEC/RISK/TEST/OPS for contracts and checks.
 
 ## Workflow
 
-### 1. Establish the evidence baseline
+### 1. Establish baseline, scope, readers, and applicability
 
-Inspect the available requirements, current code and configuration, schemas, APIs, tests, deployment files, runbooks, prior decisions, and production evidence.
+Inventory requirements, current code/config/schema/contracts/tests/deployment/runbooks and label claims CONFIRMED, INFERRED, PROPOSED, or OPEN.
 
-Record each material statement as:
+Define current state, target, gap, owners, constraints, dependencies, non-goals, and CORE/UI/API/EVENT/DATA/SECURITY/OPS applicability. Critical OPEN items mean Not Ready.
 
-- `CONFIRMED`: supported by a versioned source;
-- `INFERRED`: derived from evidence and explicitly labeled;
-- `PROPOSED`: a new design decision;
-- `OPEN`: unresolved, with owner, due date, impact, and blocking status.
+### 2. Freeze information architecture before parallel work
 
-Never convert missing facts into confident prose. Critical OPEN items mean the document is not review-ready.
+Freeze:
 
-### 2. Declare scope and applicability
+- dual-reader paths and document outline;
+- F-ID/REQ/AC catalog;
+- canonical glossary and naming;
+- diagram legend and D-ID convention;
+- traceability/evidence format;
+- canonical home for API, event, DB, state, and decision definitions.
 
-Define goals, non-goals, current baseline, target capability, boundaries, assumptions, constraints, dependencies, owners, version, and approval authority.
+When parallel agents are authorized for a large design, they return structured FeaturePackets or domain audits. They do not write final standalone chapters. One primary editor synthesizes the final document and owns terminology, ordering, deduplication, and cross-view consistency.
 
-Classify `CORE` plus applicable `UI`, `API`, `EVENT`, `DATA`, `SECURITY`, and `OPS`. Every N/A requires a reason and evidence.
+### 3. Build a five-minute mental model
 
-### 3. Create stable IDs and evidence maps
+Within the first 15% include:
 
-Assign stable IDs to requirements, acceptance criteria, flows, contracts, decisions, risks, quality scenarios, tests, and operational checks.
+- problem, outcome, scope, non-scope;
+- canonical glossary;
+- one system summary Mermaid diagram;
+- feature map F-ID → primary diagram → UI/API/event/data/test;
+- core lifecycle and major boundaries.
 
-Maintain:
+### 4. Design by vertical feature packets
+
+Each F-ID contains:
+
+1. purpose, actor, trigger, preconditions, permissions, measurable result;
+2. at least one primary Mermaid diagram from trigger to result;
+3. guided diagram reading and text alternative;
+4. frontend controls, validation, and all client states;
+5. exact sync/async contracts and field mappings;
+6. backend orchestration, modules, transactions, and side effects;
+7. physical data reads/writes, fields, indexes, invariants, and migrations;
+8. state, concurrency, idempotency, timeout, retry, cancellation, failure, compensation, restart, and recovery;
+9. security, observability, quality targets;
+10. deterministic verification and acceptance mapping.
+
+Use shared normative references instead of duplicating schemas.
+
+### 5. Apply visual closure
+
+Mandatory:
+
+- one early system summary diagram;
+- one primary Mermaid behavior diagram for every F-ID;
+- ER when persistence applies;
+- state diagram for non-trivial lifecycles;
+- sequence diagram across client/API/async/external boundaries;
+- flowchart for complex branching;
+- deployment view when topology affects behavior.
+
+Each diagram has a stable D-ID, purpose, text alternative/accTitle/accDescr, “read 1→N” guide, canonical names, and mappings to requirements/contracts/data/tests. Diagrams never replace exact schemas, DDL, error tables, state tables, or pseudocode.
+
+Prefer focused diagrams: approximately 12 top-level nodes for summaries, 8 participants/20 messages for sequences, 15 nodes for flowcharts, and 10 entities for focused ER views unless the document explains a different budget. Render Mermaid blocks or mark rendering unverified.
+
+### 6. Close exact contracts, data, failures, and operations
+
+Specify UI state; API/event schemas; backend ownership; data columns/constraints/indexes; transactions/concurrency; security/privacy; quality thresholds; build/config/deploy; migration/backfill; observability; rollback/backup/restore; and tests.
+
+For every critical journey trace:
 
 ```text
-requirement / acceptance criterion
-→ design element
-→ UI / API / event / data / state
-→ risk and quality scenario
-→ test
-→ runtime evidence
+UI/state → API/event → domain → repository/external → data/message
+→ response/state → user and operator result
 ```
 
-Also map stakeholder/concern → view and decision → alternatives/rationale/tradeoff.
+### 7. Integrate rather than concatenate
 
-### 4. Write current state, target, and gaps
+After research:
 
-Describe what exists, what does not, and where the present capability boundary lies. Define the target behavior. List each gap and consequence, then map it to concrete modules, contracts, data/configuration, migration, tests, rollout, and code landing points.
+1. resolve terminology and conflicts;
+2. synthesize the outline around F-IDs and reader journeys;
+3. define each shared contract once;
+4. rewrite every accepted packet into the same voice and section rhythm;
+5. remove repeated facts and replace them with links;
+6. unify diagram participants and directions;
+7. verify every cross-reference and identifier;
+8. run Mermaid and document-structure checks.
 
-Do not stop at a feature list or file list.
+Hard-splice signals are blocking defects: multiple H1s/status blocks/TOCs, duplicated normative definitions, repeated conclusion sections, numbering restarts, embedded standalone reports, and abrupt voice or terminology changes.
 
-### 5. Close cross-layer semantics
+### 8. Run author readiness
 
-For every critical journey, specify UI/state → API/event → domain action → data/message → runtime signal.
+Learner blind read: can a reader explain the summary and one full feature path in ten minutes?
 
-Define applicable schemas, errors, authorization, idempotency, ordering, timeouts, retries, cancellation, concurrency, transactions, state transitions, invariants, partial failure, compensation, recovery, and operator action.
+Implementer blind task: can an engineer choose any F-ID and find its diagram, contracts, backend, data, failures, tests, and evidence within two jumps, then implement without a new critical design decision?
 
-Use OpenAPI, AsyncAPI, protobuf, JSON Schema, DDL, state machines, sequence diagrams, decision tables, or pseudocode when they express the contract more precisely than prose.
+Also verify no critical OPEN/TODO/TBD, all diagrams render, exact tables agree with ER/state/sequence views, and requirement→design→test→runtime traceability closes.
 
-### 6. Quantify quality and verification
+If any hard gate fails, mark DRAFT — NOT READY FOR FORMAL REVIEW. Do not self-score or declare PASS.
 
-Turn “fast,” “available,” “secure,” “scalable,” and similar claims into scenarios with source, stimulus, artifact, environment, response, measure, and verification.
+## Required information architecture
 
-Map every requirement, invariant, failure mode, authorization rule, migration, and quality target to deterministic tests or runtime checks with inputs, environment, expected result, threshold, and owner.
-
-### 7. Design delivery and recovery
-
-Specify version compatibility, migration/backfill, rollout, health gates, stop conditions, observability, alerting, runbook, rollback, backup/restore, RTO/RPO, reconciliation, and support ownership as applicable.
-
-A deployment sequence without a failure and recovery sequence is incomplete.
-
-### 8. Run the author readiness check
-
-Before handoff, confirm:
-
-- the artifact and evidence are versioned and reproducible;
-- all applicable template sections contain resolved decisions or justified N/A;
-- no critical `TODO/TBD/TBC/OPEN` remains;
-- cross-view names, boundaries, ownership, schemas, and directions agree;
-- every critical requirement has design and verification targets;
-- failure, concurrency, security, migration, rollout, and recovery semantics are explicit;
-- two qualified engineers would not make different critical choices.
-
-If the check fails, label the output `DRAFT — NOT READY FOR FORMAL REVIEW` and give the shortest completion list. Do not self-score or declare PASS.
-
-### 9. Prepare review handoff
-
-Freeze a document version and provide:
-
-- applicability and tailoring table;
-- evidence/source index;
-- traceability matrix;
-- open-decision and accepted-risk register;
-- changed sections since the previous review;
-- requested reviewers by domain;
-- explicit statement: `Ready for independent review` or `Not ready`.
+1. Identity/status/readers/how to read
+2. Executive summary, scope, glossary, summary diagram, feature map
+3. Context/components/deployment/core lifecycle
+4. F-ID feature implementation packets
+5. Shared API/event contracts
+6. Backend/runtime cross-cutting mechanisms
+7. Physical database/data/migration reference
+8. Security/quality/operations/recovery
+9. Verification/traceability/review handoff
+10. Decisions/risks/open items/evidence
 
 ## Precision rules
 
-- Prefer exact schemas, state tables, sequences, invariants, thresholds, and examples over adjectives.
-- Describe normal, boundary, rejected, timeout, retry, duplicate, concurrent, partial-success, restart, and recovery behavior when applicable.
-- Allow local code organization to remain an implementation choice; close all cross-module and risk-bearing semantics.
-- Use diagrams only when they resolve a concern. A diagram count is never a quality metric.
-- Do not duplicate production code into the design. Specify behavior, contracts, invariants, and landing points.
-- Do not cite “framework defaults,” “industry standard,” or undocumented team knowledge as design evidence.
-- Do not return an empty generic template when project evidence is available; fill confirmed sections and expose missing evidence precisely.
-
-## Completion test
-
-Ask:
-
-> If two qualified engineers independently implement this document, could they choose different critical interfaces, data rules, states, errors, concurrency behavior, security controls, quality thresholds, migration, rollback, or acceptance criteria?
-
-If yes, continue designing. The document is not ready for formal review.
+- diagrams answer structure, sequence, state, relationship, or deployment questions;
+- every F-ID needs visual coverage, but methods and headings do not receive decorative diagrams;
+- exact schemas, states, errors, thresholds, invariants, and examples outrank adjectives;
+- never cite framework defaults or undocumented team knowledge as evidence;
+- keep AS-IS, PROPOSED, and UNKNOWN visually and textually distinct.
