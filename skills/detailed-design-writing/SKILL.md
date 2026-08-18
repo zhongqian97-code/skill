@@ -69,11 +69,11 @@ Each F-ID contains:
 2. at least one primary Mermaid diagram from trigger to result;
 3. guided diagram reading and text alternative;
 4. frontend controls, validation, and all client states;
-5. exact sync/async contracts and field mappings;
+5. exact sync/async contracts and field mappings; async schemas enumerate every wire key/type/required-or-omitempty/zero-value rule plus producer, consumer, queue, retry and timeout;
 6. backend orchestration, modules, transactions, and side effects;
-7. physical data reads/writes, fields, indexes, invariants, and migrations;
-8. state, concurrency, idempotency, timeout, retry, cancellation, failure, compensation, restart, and recovery;
-9. security, observability, quality targets;
+7. physical data reads/writes, fields, indexes, invariants, and migrations; distinguish physical DEFAULT, migration backfill, and application default;
+8. state, concurrency, idempotency, timeout, retry, cancellation, failure, compensation, restart, and recovery, including cross-store partial commits, repeated cleanup/double-apply, quota/accounting drift, reconciliation, and exact side-effect order;
+9. security, observability, quality targets; every sensitive field traces request → serialization/domain → persistence/config → response/log/export, with encryption/masking/raw exposure stated explicitly;
 10. deterministic verification and acceptance mapping.
 
 Use shared normative references instead of duplicating schemas.
@@ -90,7 +90,7 @@ Mandatory:
 - flowchart for complex branching;
 - deployment view when topology affects behavior.
 
-Each diagram has a stable D-ID, purpose, text alternative/accTitle/accDescr, “read 1→N” guide, canonical names, and mappings to requirements/contracts/data/tests. Diagrams never replace exact schemas, DDL, error tables, state tables, or pseudocode.
+Each diagram has a stable D-ID, purpose, text alternative/accTitle/accDescr, “read 1→N” guide, canonical names, and mappings to requirements/contracts/data/tests. Sequence diagrams preserve actual side-effect order and mark queue/worker concurrency or partial ordering explicitly; they may not serialize a race or reorder a source write for readability. Diagrams never replace exact schemas, DDL, error tables, state tables, or pseudocode.
 
 Prefer focused diagrams: approximately 12 top-level nodes for summaries, 8 participants/20 messages for sequences, 15 nodes for flowcharts, and 10 entities for focused ER views unless the document explains a different budget. Render Mermaid blocks or mark rendering unverified.
 

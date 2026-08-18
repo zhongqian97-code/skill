@@ -52,6 +52,13 @@ S9 Verification/traceability/evidence/closure
 
 Immediate failure when applicable exact fields, schemas, states, failures, migration/build steps, or evidence are absent. ER diagrams and sequence diagrams do not replace normative contracts.
 
+Precision extensions:
+
+- every sensitive field must trace request → DTO/domain → serialization → persistence/config → logs and list/detail/export responses; record actual encryption, masking, omission, or raw exposure;
+- every async contract must enumerate all JSON keys/types/required-or-omitempty/zero-value compatibility, producer, consumer, queue, timeout, retry, and counter semantics;
+- database review distinguishes physical DEFAULT from migration backfill and application defaults;
+- cross-store cleanup/reparse review preserves side-effect order and checks error aggregation, partial commit, retry/double-apply, accounting drift, reconciliation, and repair.
+
 ## 4. Run document-usability and visual gates
 
 ### U1 Single-document integrity
@@ -84,7 +91,7 @@ Any uncovered F-ID is a hard S2 finding.
 
 Every diagram needs stable D-ID, purpose, text alternative or accTitle/accDescr, guided reading, canonical names, and mappings to F/BEH/API/EVT/DB/TEST/E.
 
-Edges must represent evidenced calls/messages/data writes. Sync/async direction, states, and failure branches must agree with exact contracts. Mermaid must render or be explicitly marked rendering-unverified; syntax or semantic contradictions fail.
+Edges must represent evidenced calls/messages/data writes. Sequence and flow views must preserve evidenced side-effect order and explicitly show queue/worker concurrency or partial ordering; a diagram that serializes a race, moves a write across enqueue, bypasses API/service layers, or lets a failed branch continue into success is a hard contradiction. Sync/async direction, states, and failure branches must agree with exact contracts. Mermaid must render or be explicitly marked rendering-unverified; syntax or semantic contradictions fail.
 
 A diagram that merely decorates prose does not satisfy coverage.
 

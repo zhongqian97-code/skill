@@ -1,6 +1,6 @@
 ---
 name: "reverse-engineer-feature-design"
-description: "将单一功能逆向为图文统一、双读者可用且证据闭合的一份 AS-IS 设计。"
+description: "逆向单一功能为图文统一、证据闭合且可等价复现的一份 AS-IS 设计。"
 ---
 
 # Reverse Engineer Feature Design
@@ -112,7 +112,7 @@ actor/UI → client state → API/event → handler → service/domain
 → response/event → client state → visible/operational result
 ```
 
-Trace material fields forward and backward. Include normal, validation, empty, unauthorized, timeout, retry, duplicate, concurrent, cancellation, partial failure, restart, and recovery variants when applicable.
+Trace every material field forward and backward. Sensitive fields require an explicit path from UI/request through DTO/domain, serialization, database/config, logs, and every response/read surface, including whether encryption, masking, omission, or raw exposure actually occurs. Include normal, validation, empty, unauthorized, timeout, retry, duplicate, concurrent, cancellation, partial failure, restart, and recovery variants when applicable.
 
 ### 6. Reconstruct exact frontend, backend, contracts, and persistence
 
@@ -120,9 +120,10 @@ Close:
 
 - routes, component ownership, controls/defaults/validation and all client states;
 - sync request/response/error/idempotency/timeout/version contracts;
-- async producer/consumer/payload/order/retry/dedup/DLQ/replay contracts;
+- async producer/consumer contracts with every JSON key, exact type, required/omitempty/zero-value compatibility, queue, retry, timeout, order, dedup, DLQ, replay, and counter-consumption semantics; a “core fields” summary is not closure;
 - handler/service/repository responsibilities and transaction/concurrency behavior;
-- every physical table/object, column/type/null/default, PK/FK actions, unique/check/index, migration, empty-DB order, backfill, rollback/restore, and query/DTO lineage;
+- every physical table/object, column/type/null/default, PK/FK actions, unique/check/index, migration, empty-DB order, backfill, rollback/restore, and query/DTO lineage; distinguish physical database DEFAULT, migration backfill, and application-assigned defaults;
+- every cross-store create/update/cleanup sequence, including exact side-effect order, error aggregation, partial commits, retry/re-entry behavior, double-apply risk, reconciliation, and accounting/quota drift;
 - security, tenancy, build/config/deploy, observability, capacity, recovery, and tests.
 
 Do not replace exact contracts with diagrams.
@@ -147,7 +148,8 @@ Each diagram must have:
 - canonical names matching prose, APIs, events, modules, states, and DB objects;
 - links or a mapping table to F/BEH/API/EVT/DB/E IDs;
 - AS-IS versus INFERRED distinctions;
-- explicit sync/async direction and important failure branches.
+- explicit sync/async direction and important failure branches;
+- source-faithful side-effect order and visible concurrency/partial-order boundaries when queued consumers can race with the producer's remaining writes.
 
 Readability heuristics: summary diagrams normally stay within 12 top-level nodes; sequence diagrams within 8 participants and 20 messages; flowcharts within 15 nodes; focused ER views within 10 entities. Split larger diagrams and keep a parent overview.
 
@@ -192,7 +194,7 @@ Learner test: within ten minutes, can a reader explain the system from the summa
 
 Implementer test: for any F-ID, can an engineer locate its diagram, UI, contract, backend symbols, tables/fields, failures, tests, and evidence within two navigational jumps and implement an equivalent skeleton without a new critical design choice?
 
-Equivalent-reproduction test: can a clean database and full feature be reconstructed without reopening source except to verify citations?
+Equivalent-reproduction test: can a clean database and full feature be reconstructed without reopening source except to verify citations? Sample at least one sensitive field, one async payload, and one cross-store cleanup/retry path; if any requires source access, closure fails.
 
 Status:
 

@@ -50,12 +50,17 @@ Synchronous:
 Asynchronous:
 
 - channel/direction/producer/consumer;
-- payload schema and version;
+- complete payload schema: every JSON key, exact type, required/omitempty, zero-value and legacy compatibility;
+- queue, timeout, MaxRetry/backoff and whether completion consumes a parent counter;
 - order, retry, dedupe, DLQ, replay, poison-message behavior.
+
+A table of “core fields” is a hard failure when an implementer still needs source to construct a compatible payload.
 
 Field lineage:
 
 `UI/client ↔ request/event ↔ domain/service ↔ repository ↔ DB/external field ↔ response/client/display`.
+
+For every sensitive field, audit request, DTO/domain, serialization, persistence/config, logs, list/detail/export responses, encryption and masking. Raw persistence or response exposure omitted from the design is at least S1 when it can leak credentials or private data.
 
 A sequence diagram without exact schemas is insufficient.
 
@@ -85,6 +90,7 @@ If persistence applies, every object must have:
 - sequences, enums/domains, triggers, generated columns, views;
 - tenant/partition/shard keys, retention and audit/encryption where relevant;
 - migration/schema/ORM/DDL source and version;
+- explicit distinction among physical database DEFAULT, migration-only backfill, and application-assigned default;
 - engine/extensions/prerequisites;
 - empty-database construction order;
 - seeds/reference data, backfill, compatibility, rollback/restore, irreversible steps;
@@ -107,6 +113,7 @@ The reviewer must be able to answer: can a clean database be built and verified 
 Pass requires:
 
 - state machines/invariants;
+- exact cross-store side-effect order for create/update/delete/reparse/cleanup; error aggregation, partial commits, retry/re-entry, double-apply risk, quota/accounting drift and reconciliation;
 - transaction boundaries and isolation/locks/version checks;
 - duplicate/idempotency behavior;
 - concurrent modification and race outcomes;
