@@ -1,132 +1,140 @@
-# Detailed Design Review
+# Detailed Design Review Report
 
-## 1. Review metadata
+## 0. Review identity
 
 - Document:
-- Version / commit:
-- System / feature:
-- Author:
-- Reviewers:
+- Version/hash:
 - Review date:
-- Applicability: CORE / UI / API / EVENT / DATA / SECURITY / OPS
-- Previous review:
-- Final verdict: PASS / CONDITIONAL PASS / FAIL
-- Weighted score: /100 or N/A because a gate failed
+- Reviewer:
+- Mode: AS-IS RECONSTRUCTION AUDIT | TO-BE IMPLEMENTATION AUTHORIZATION
+- Source repository/full commit (AS-IS):
+- Scope baseline and REQ/AC version (TO-BE):
 
-## 2. Executive conclusion
+## 1. Verdict
 
-- Intended change:
-- Implementation-ready conclusion:
-- Highest risks:
-- Authorization:
-  - [ ] May enter implementation
-  - [ ] Must close conditions and recheck
-  - [ ] Must revise and receive a new formal review
+- Verdict: COMPLETE RECONSTRUCTION | PARTIAL RECONSTRUCTION | BLOCKED RECONSTRUCTION | PASS | CONDITIONAL PASS | FAIL | FAIL (not ready)
+- Implementation authorization: NOT APPLICABLE / NOT GRANTED / GRANTED
+- One-sentence basis:
+
+## 2. Readiness gate
+
+| Required input | Present | Evidence/location | Impact |
+|---|---:|---|---|
+| Mode and artifact intent | | | |
+| Pinned source + feature boundary (AS-IS) | | | |
+| BEH + implementation census (AS-IS) | | | |
+| Evidence/conflict/unknown ledgers (AS-IS) | | | |
+| Frozen scope + REQ/AC (TO-BE) | | | |
+| Owners/approvers/baseline (TO-BE) | | | |
+| Traceability/test/release artifacts (TO-BE) | | | |
 
 ## 3. Applicability
 
-| Area | Applicable | Rationale and evidence | Reviewer |
-| --- | --- | --- | --- |
-| CORE | Yes | | |
-| UI | Yes/No | | |
-| API | Yes/No | | |
-| EVENT | Yes/No | | |
-| DATA | Yes/No | | |
-| SECURITY | Yes/No | | |
-| OPS | Yes/No | | |
+| Surface | Applicable / N/A / unknown | Evidence |
+|---|---|---|
+| Frontend | | |
+| Sync API | | |
+| Async/event/job | | |
+| Backend/domain | | |
+| Database/persistence | | |
+| External dependencies | | |
+| Build/config/deploy | | |
+| Security/operations | | |
+| Migration/rollback/restore | | |
 
-## 4. Readiness result
+## 4. Shared hard gates
 
-- Result: READY / NOT READY
-- Missing entry evidence:
-- Critical TBD/TBC/TODO:
-- Minimum completion set:
+| Gate | Result | Confidence | Evidence | Blocking gap |
+|---|---|---:|---|---|
+| S1 Scope/behavior/census | | | | |
+| S2 Frontend/state | | | | |
+| S3 Contracts/field lineage | | | | |
+| S4 Backend/flows | | | | |
+| S5 Database/empty-DB build | | | | |
+| S6 State/concurrency/failure | | | | |
+| S7 Security/boundaries | | | | |
+| S8 Build/deploy/operations | | | | |
+| S9 Verification/evidence/closure | | | | |
 
-## 5. Hard gates
+## 5. Mode-specific gates
 
-| Gate | Result | Evidence | Notes |
-| --- | --- | --- | --- |
-| G1 Scope and baseline | PASS/FAIL/N/A/NOT EVALUATED | | |
-| G2 Bidirectional traceability | | | |
-| G3 Executable interaction contracts | | | |
-| G4 Data, state, consistency, migration | | | |
-| G5 Critical flows and recovery | | | |
-| G6 Measurable quality attributes | | | |
-| G7 Security, privacy, compliance | | | |
-| G8 Verification and acceptance | | | |
-| G9 Decisions, operations, delivery | | | |
+### AS-IS
 
-## 6. Traceability audit
+| Gate | Result | Evidence | Blocking gap |
+|---|---|---|---|
+| A1 Source pinning | | | |
+| A2 Bidirectional trace | | | |
+| A3 Source arbitration | | | |
+| A4 Defect versus omission classification | | | |
+| A5 Equivalent reproduction | | | |
 
-| Requirement / AC | Design element | Contract / data / state | Risk / quality | Test | Runtime evidence | Status |
-| --- | --- | --- | --- | --- | --- | --- |
+### TO-BE
 
-- Requirements with design mapping:
-- Requirements with verification mapping:
-- Critical requirements with runtime evidence:
-- Orphan requirements:
-- Unmotivated design elements:
+| Gate | Result | Evidence | Blocking gap |
+|---|---|---|---|
+| T1 REQ/AC traceability | | | |
+| T2 Decision closure/owners | | | |
+| T3 Verification-ready acceptance | | | |
+| T4 Release/migration feasibility | | | |
+| T5 Independent convergence | | | |
 
-## 7. Concern and view coverage
+Delete or mark the non-selected mode N/A.
 
-| Stakeholder / concern | Required view or evidence | Location | Cross-view consistency | Status |
-| --- | --- | --- | --- | --- |
+## 6. Database reconstruction audit
 
-## 8. Quality attribute scenarios
+If persistence is N/A, provide evidence. Otherwise:
 
-| ID | Source | Stimulus | Artifact | Environment | Response | Measure | Evidence |
-| --- | --- | --- | --- | --- | --- | --- | --- |
+| Check | Result | Exact location/evidence | Missing decision |
+|---|---|---|---|
+| Physical object catalog | | | |
+| Complete column definitions | | | |
+| PK generation/composite order | | | |
+| FK targets/update/delete/deferrability | | | |
+| Unique/check/exclusion invariants | | | |
+| Index definitions/access rationale | | | |
+| Triggers/enums/sequences/views | | | |
+| Tenant/partition/retention/security | | | |
+| Schema source/version | | | |
+| Empty-DB construction order | | | |
+| Seed/backfill/compatibility | | | |
+| Migration rollback/restore | | | |
+| Query/DTO/column mapping | | | |
 
-## 9. Scoring
+Answer: Can an empty database be built and verified without reopening source or making a new schema decision?
 
-Complete only when all applicable gates pass.
+## 7. Frontend/backend round-trip audit
 
-| Dimension | Weight | Rating 0–4 | Weighted score | Evidence | Rationale |
-| --- | ---: | ---: | ---: | --- | --- |
-| Scope and traceability | 14 | | | | |
-| Functional/UI behavior | 12 | | | | |
-| Architecture and decisions | 12 | | | | |
-| Interface contracts | 14 | | | | |
-| Data/state/concurrency | 14 | | | | |
-| Quality attributes/capacity | 12 | | | | |
-| Resilience/operations/delivery | 10 | | | | |
-| Security/privacy/compliance | 7 | | | | |
-| Verification/acceptance | 5 | | | | |
-| Total | 100 | | /100 | | |
+| BEH/field | UI/client | Request/event | Backend/domain | Repository/database | Response/client/UI | Result |
+|---|---|---|---|---|---|---|
 
-## 10. Findings
+## 8. Findings
 
-| ID | Severity | Evidence location | Problem | Impact | Required remediation | Owner | Due | Verification |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ID | Severity | Gate | Classification | Document location | Evidence/missing artifact | Impact | Minimal closure |
+|---|---|---|---|---|---|---|---|
 
-- S0:
-- S1:
-- S2:
-- S3:
-- S4:
+Classification for AS-IS: reconstruction omission | source defect | source limitation | evidence blocker.
 
-## 11. Decisions and accepted risks
+## 9. Source defects appendix (AS-IS)
 
-| ID | Decision or risk | Alternatives | Rationale | Tradeoff | Approver | Expiry / review date |
-| --- | --- | --- | --- | --- | --- | --- |
+| ID | Conflicting/defective source artifacts | Observed behavior | Reproduction impact | Evidence | Recommended project fix |
+|---|---|---|---|---|---|
 
-## 12. Conditions
+These items are not substitutes for documenting the implementation that exists.
 
-| Condition | Owner | Due | Exact document change | Recheck method | Status |
-| --- | --- | --- | --- | --- | --- |
+## 10. Document correction set
 
-## 13. Re-review scope
+List only changes required in the design:
 
-- Full review / delta review:
-- Sections invalidated by change:
-- Required reviewers:
-- Required evidence:
+1.
+2.
 
-## 14. Sign-off
+## 11. External/source correction set
 
-- Product / requirement owner:
-- Architecture reviewer:
-- Security reviewer:
-- Data reviewer:
-- Operations reviewer:
-- Final design authority:
+List source defects, unavailable artifacts, or environment blockers separately:
+
+1.
+2.
+
+## 12. Re-review criteria
+
+State the exact artifacts, gates, and evidence required for the next verdict.

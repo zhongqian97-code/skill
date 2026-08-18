@@ -1,151 +1,220 @@
 ---
 name: "review-detailed-design"
-description: "Review detailed designs with hard gates, evidence scoring, severity, and implementation authorization."
+description: "Audit AS-IS reconstruction or authorize TO-BE implementation with hard full-stack and database gates."
 ---
 
-# Review detailed designs
+# Review Detailed Design
 
-Review a detailed design independently before implementation. Approve only when another qualified engineer can implement and verify the design without inventing critical behavior.
+Review a detailed design using one of two explicit modes:
 
-Read [references/review-standard.md](references/review-standard.md) completely for every formal review. Read [references/sources.md](references/sources.md) when the user asks for rationale, standards, or source verification. Use [templates/review-report.md](templates/review-report.md) as the required report structure.
+1. **AS-IS RECONSTRUCTION AUDIT** — determine whether a source-derived design faithfully and completely reconstructs the pinned implementation for equivalent reproduction.
+2. **TO-BE IMPLEMENTATION AUTHORIZATION** — determine whether a proposed design is ready to authorize implementation.
 
-Match the user's language. Preserve identifiers, code, paths, schema names, and quoted evidence.
+Never mix their inputs, verdicts, or authority.
 
-## Authority rule
+## Core principles
 
-Treat the verdict as an implementation gate:
+- Review contracts and evidence, not page count or polish.
+- Select the mode before the readiness gate.
+- Frontend, backend, interaction contracts, and persistence are first-class implementation surfaces.
+- If persistent state is applicable, names or an ER diagram are not a database design.
+- If a UI and backend are applicable, component and endpoint lists are not an interaction design; require field-level round trips and state transitions.
+- A defect in the source implementation belongs in an AS-IS appendix/conflict ledger. An implementation detail present in source but missing from the document is a reconstruction defect.
+- Do not lower the standard because a document calls itself a draft.
+- Never authorize implementation from an AS-IS document.
 
-- `PASS`: authorize implementation.
-- `CONDITIONAL PASS`: do not authorize implementation yet. Close every condition and perform the stated recheck before converting to `PASS`.
-- `FAIL`: return the design for revision and re-review.
+Read `references/review-standard.md` completely before reviewing.
 
-Never let a score offset a failed hard gate or an open S0, S1, or S2 finding.
+## 1. Select review mode
 
-## Review workflow
+### AS-IS RECONSTRUCTION AUDIT
 
-### 1. Establish the review baseline
+Use when the document was derived from an existing codebase and is intended for learning, comparison, or reuse baseline.
 
-Record:
+Required inputs:
 
-- document name, stable version, commit, or timestamp;
-- system or feature and change scope;
-- author, owners, reviewers, and intended approval authority;
-- referenced requirements, specifications, diagrams, schemas, and code baseline;
-- assumptions, constraints, dependencies, out-of-scope items, and open decisions.
+- repository and full pinned commit;
+- feature boundary and behavior IDs;
+- implementation-surface census;
+- AS-IS design;
+- evidence, coverage, conflict, and unknown ledgers;
+- access to the pinned source or sufficient immutable evidence.
 
-If the review object or version cannot be reproduced, report an S0 and `FAIL`.
+Verdicts:
 
-### 2. Declare applicability
+- `COMPLETE RECONSTRUCTION`;
+- `PARTIAL RECONSTRUCTION`;
+- `BLOCKED RECONSTRUCTION`.
 
-Classify the design using:
+These verdicts describe reconstruction quality only and never authorize implementation.
 
-- `CORE`: always applicable;
-- `UI`: pages or user interaction;
-- `API`: synchronous APIs or RPC;
-- `EVENT`: messages, jobs, webhooks, or asynchronous workflows;
-- `DATA`: persistent data, caches, indexes, files, or migrations;
-- `SECURITY`: identity, permissions, sensitive data, money, tenants, or trust boundaries;
-- `OPS`: release, capacity, availability, recovery, or external dependencies.
+### TO-BE IMPLEMENTATION AUTHORIZATION
 
-For every excluded area, require a specific `N/A` rationale and evidence. Treat an invalid `N/A` as a hard-gate failure.
+Use when the document proposes a target implementation.
 
-### 3. Run the readiness gate
+Required inputs:
 
-Before scoring, verify that the document contains:
+- frozen scope and stable requirement/acceptance IDs;
+- implementation-ready design;
+- traceability matrix;
+- test/verification and release/rollback plans;
+- owners and approvers;
+- baseline/version/change history.
 
-1. scope, goals, non-goals, baseline, assumptions, constraints, and owners;
-2. stable requirement or acceptance IDs and their design targets;
-3. at least one end-to-end main flow plus relevant failure, timeout, retry, cancellation, concurrency, and recovery flows;
-4. cross-layer contracts from UI/state through API/event, domain operation, data/message, and runtime signal;
-5. data ownership, trust boundaries, transaction/consistency boundaries, and critical invariants;
-6. measurable acceptance criteria, test mapping, rollout, observability, rollback, and recovery.
-
-If any applicable item is absent or a critical item remains `TBD/TBC/TODO`, stop the formal review. Produce `FAIL (not ready)`, list the shortest concrete completion set, and do not invent missing design.
-
-Early advisory feedback is allowed, but it cannot produce `PASS` or implementation authorization.
-
-When readiness fails, use an abbreviated report: metadata, executive conclusion, applicability, readiness result, directly supported findings, and re-review scope. In the hard-gate table, record gates directly proven to fail and mark every unexamined applicable gate `NOT EVALUATED — readiness stop`. Do not misuse `N/A` and do not score.
-
-### 4. Build evidence maps
-
-Create these maps before judging quality:
-
-- stakeholder/concern → section, view, or artifact;
-- requirement/acceptance criterion → design element → contract/data/state → test → runtime evidence;
-- decision → alternatives → rationale → quality/risk impact;
-- critical flow → failure modes → recovery → operator action.
-
-Flag orphan requirements, unmotivated design elements, missing verification targets, and cross-view contradictions.
-
-### 5. Evaluate all applicable hard gates
-
-After readiness passes, evaluate G1–G9 from the review standard. Each formal gate result is only:
+Verdicts:
 
 - `PASS`;
+- `CONDITIONAL PASS`;
 - `FAIL`;
-- `N/A — <rationale and evidence>`.
+- readiness failure is reported as `FAIL (not ready)`.
 
-Every result must cite a document section, diagram, table, schema, specification, or other versioned artifact. A heading without resolved design content is not evidence.
+Only unconditional `PASS` authorizes implementation.
 
-### 6. Apply the two-engineer counterfactual
+If mode is ambiguous, stop with `FAIL (not ready — review mode and artifact intent are ambiguous)`.
 
-Ask:
+## 2. Run the mode-specific readiness gate
 
-> If two qualified engineers independently implemented this document, could they make different critical choices about interfaces, data, state transitions, errors, concurrency, security, quality thresholds, migration, rollback, or acceptance?
+### AS-IS readiness
 
-If yes, rate the affected dimension at most 2/4, create at least one S2 finding, and return `FAIL`.
+Do not score until all exist:
 
-Local code organization may remain an implementation choice. Cross-module semantics and risk-bearing behavior may not.
+- pinned source identity;
+- explicit feature boundary;
+- behavior catalog;
+- implementation census;
+- evidence coordinates;
+- conflict/unknown ledger;
+- reconstruction status claimed by the author.
 
-### 7. Score only after all gates pass
+If unavailable, report `BLOCKED RECONSTRUCTION` or `PARTIAL RECONSTRUCTION` depending on whether a meaningful audit is possible. Do not ask for REQ/AC, approvers, rollout, or TO-BE acceptance criteria as AS-IS readiness inputs.
 
-Use the weights and 0–4 anchors in the review standard. Cite evidence for every rating.
+### TO-BE readiness
 
-Do not score a document with a failed gate as if it were eligible for approval. You may include diagnostic ratings, clearly marked non-authoritative, only when they help the author revise.
+Do not score until all required TO-BE inputs exist and are internally readable. Missing scope, REQ/AC, baseline, owners/approvers, traceability, or verification/release artifacts yields `FAIL (not ready)`.
 
-### 8. Classify findings and determine the verdict
+Readiness controls whether scoring is meaningful; it must not hide obvious severe findings. Record any immediately visible critical issue even when stopping.
 
-Classify every finding S0–S4 by impact, not scheduling priority. Apply the verdict rules exactly.
+## 3. Determine applicability
 
-Do not downgrade severity because a team does not plan to fix an issue soon. Do not accept high or critical risk without the required authority, owner, expiry, mitigation, and verification.
+For each surface mark `applicable`, `not applicable with evidence`, or `unknown`:
 
-### 9. Produce the report
+- frontend;
+- synchronous contracts;
+- asynchronous contracts;
+- backend/domain;
+- database/persistence;
+- external dependencies;
+- build/config/deployment;
+- security/operations;
+- migration/rollback/restore.
 
-Use the report template. At minimum include:
+A bare “N/A” is not evidence. Unknown material applicability fails the relevant gate.
 
-- final verdict and explicit implementation authorization;
-- artifact and version reviewed;
-- applicability profile and N/A rationales;
-- hard-gate table with evidence;
-- traceability and quality-attribute evidence;
-- score, only when eligible;
-- findings with severity, impact, exact remediation, owner, due date, and verification;
-- accepted risks, conditions, and re-review scope.
+## 4. Run shared implementation-completeness gates
 
-A finding must say what evidence is missing or contradictory and the exact design change required. Do not rewrite the design inside the review and then approve your own addition.
+Use the gate definitions in `references/review-standard.md`.
 
-## Re-review rules
+- S1 Scope, behavior, and complete implementation census
+- S2 Frontend states and client design
+- S3 Synchronous/asynchronous contracts and field lineage
+- S4 Backend responsibilities and executable flows
+- S5 Database schema and empty-database reconstruction
+- S6 State, transactions, concurrency, failures, and recovery
+- S7 Security, tenancy, privacy, and external boundaries
+- S8 Build, configuration, deployment, observability, rollback, and restore
+- S9 Verification, traceability, evidence, and closure
 
-Invalidate the prior `PASS` when changes affect:
+### Immediate hard failures
 
-- scope or acceptance criteria;
-- API, event, data, or state contracts;
-- transaction, concurrency, retry, or failure semantics;
-- security or trust boundaries;
-- quality targets, capacity assumptions, migration, rollout, rollback, or recovery.
+The relevant gate fails immediately when:
 
-Use a delta review only when unchanged evidence is versioned and still valid. Otherwise perform a full review.
+- persistence is applicable but exact physical objects, columns, keys/constraints/indexes, schema source, or construction/migration order are missing;
+- a database can not be built from empty state using the document and cited artifacts;
+- frontend and backend are applicable but request/response and field-level round trips are missing;
+- UI states or backend failure paths are reduced to a happy path;
+- transaction, concurrency, retry/idempotency, or recovery behavior is material but unspecified;
+- an inventory item, behavior, contract, or database object is material and unexplained;
+- the document relies on inference while claiming an exact contract;
+- build/deploy/migration/rollback steps are necessary but absent.
 
-## Prohibited shortcuts
+## 5. Apply mode-specific gates
 
-Never approve based on:
+### AS-IS fidelity gates
 
-- page count, word count, number of diagrams, UML usage, or apparent polish;
-- “the framework handles it,” “industry standard,” or undocumented team knowledge;
-- happy-path-only narratives;
-- totals or averages that hide a weak dimension;
-- reviewer-supplied core design decisions;
-- inaccessible, unversioned, or stale evidence;
-- a list of tests without inputs, expected results, thresholds, or traceability.
+- A1 Source pinning and evidence integrity
+- A2 Forward and backward implementation trace
+- A3 Source-of-truth arbitration and conflict handling
+- A4 Source defects separated from document omissions
+- A5 Equivalent-reproduction counterfactual
 
-The decisive test is evidence closure: the design must be specific enough to code, integrate, test, operate, recover, and review without moving critical design decisions into implementation.
+For A5, ask whether a second engineer can reproduce the frontend, backend, interaction contracts, persistent schema, failures, and clean-environment build without reopening the source except to verify cited locations.
+
+A source defect does not fail reconstruction if the document accurately records the observed defect, its evidence, and effect. It belongs in the appendix. The same behavior or schema existing in source but absent from the document is a reconstruction omission and fails the relevant shared gate.
+
+### TO-BE authorization gates
+
+- T1 Stable REQ/AC and bidirectional traceability
+- T2 Decision closure and accountable owners
+- T3 Verification-ready acceptance and tests
+- T4 Migration/release/rollback feasibility
+- T5 Independent implementer convergence
+
+Two competent implementers should not have to make materially different decisions about UI, contracts, data schema, state, concurrency, security, migration, recovery, or acceptance.
+
+## 6. Record findings
+
+Each finding includes:
+
+- stable ID;
+- severity;
+- shared/mode-specific gate;
+- exact document location;
+- evidence or missing artifact;
+- why it affects fidelity or implementation;
+- minimal closure action;
+- owner and status when applicable.
+
+Severity:
+
+- `S0`: catastrophic safety, security, data-loss, or irreversible integrity risk;
+- `S1`: material authorization/fidelity blocker with likely severe production impact;
+- `S2`: hard-gate completeness blocker;
+- `S3`: important improvement that does not independently block;
+- `S4`: editorial or optional improvement.
+
+Any S0/S1/S2 means a TO-BE design cannot pass and an AS-IS reconstruction cannot be complete.
+
+## 7. Produce the verdict
+
+### AS-IS
+
+- `COMPLETE RECONSTRUCTION`: all applicable shared and A gates pass; no S0/S1/S2; no material unknowns.
+- `PARTIAL RECONSTRUCTION`: useful reconstruction exists but any applicable gate remains open.
+- `BLOCKED RECONSTRUCTION`: trustworthy audit cannot proceed because source, scope, generated artifacts, dependencies, or evidence are unavailable.
+
+State clearly: `Implementation authorization: NOT APPLICABLE / NOT GRANTED`.
+
+### TO-BE
+
+- `PASS`: all shared and T gates pass; no S0/S1/S2; independent implementation is authorized.
+- `CONDITIONAL PASS`: only non-implementation-affecting pre-start administrative conditions remain. It does not authorize implementation until conditions close and are re-reviewed.
+- `FAIL`: any hard gate fails or any S0/S1/S2 remains.
+
+Use `templates/review-report.md`. Do not modify the reviewed document unless the user separately asks for revisions.
+
+## 8. Minimum correction set
+
+List the shortest concrete changes required to reach the next verdict. Separate:
+
+- defects in the reviewed document;
+- defects/inconsistencies in the source implementation;
+- unavailable evidence or external blockers;
+- optional improvements.
+
+This separation is mandatory in AS-IS mode.
+
+## Handoff
+
+For an AS-IS result, hand the completed baseline to `detailed-design-writing` only if the user wants a separate TO-BE design. Then review that TO-BE document in authorization mode.
+
+For a TO-BE result, only unconditional PASS may be used as implementation authorization.
